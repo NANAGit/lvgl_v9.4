@@ -2,7 +2,7 @@
 # Makefile
 #
 
-arch := arm
+arch := x86
 
 ifeq ($(arch), arm)
 CC              := arm-linux-gnueabihf-gcc
@@ -22,12 +22,12 @@ LDFLAGS         ?= -lm -lpthread
 
 ifeq ($(arch), arm)
 
-ifneq ($(shell grep -m1 '^\#define LV_USE_TSLIB ' lv_conf.h | awk '{print $$3}'),0)
+ifneq ($(shell grep -m1 '^\#define LV_USE_TSLIB ' lvgl/lv_conf.h | awk '{print $$3}'),0)
 TSLIB_CFLAGS    := $(shell pkg-config --cflags ./libs/tslib/lib/pkgconfig/tslib.pc)
 TSLIB_LIBS      := $(shell pkg-config --libs ./libs/tslib/lib/pkgconfig/tslib.pc)
 endif
 
-ifneq ($(shell grep -m1 '^\#define LV_USE_FREETYPE ' lv_conf.h | awk '{print $$3}'),0)
+ifneq ($(shell grep -m1 '^\#define LV_USE_FREETYPE ' lvgl/lv_conf.h | awk '{print $$3}'),0)
 FREETYPE_CFLAGS := $(shell pkg-config --cflags ./libs/freetype/lib/pkgconfig/freetype2.pc)
 FREETYPE_CFLAGS += -I./libs/freetype/include/
 FREETYPE_LIBS   := $(shell pkg-config --libs ./libs/freetype/lib/pkgconfig/freetype2.pc)
@@ -41,17 +41,17 @@ LDFLAGS += $(TSLIB_LIBS) $(FREETYPE_LIBS) $(ZLIB_LIBS)
 
 else
 # Auto-detect enabled backends from lv_conf.h and add flags
-ifneq ($(shell grep -m1 '^\#define LV_USE_SDL ' lv_conf.h | awk '{print $$3}'),0)
+ifneq ($(shell grep -m1 '^\#define LV_USE_SDL ' lvgl/lv_conf.h | awk '{print $$3}'),0)
 SDL_CFLAGS      := $(shell pkg-config --cflags sdl2)
 SDL_LDFLAGS     := $(shell pkg-config --libs sdl2)
 endif
 
-ifneq ($(shell grep -m1 '^\#define LV_USE_EVDEV ' lv_conf.h | awk '{print $$3}'),0)
+ifneq ($(shell grep -m1 '^\#define LV_USE_EVDEV ' lvgl/lv_conf.h | awk '{print $$3}'),0)
 EVDEV_CFLAGS    := $(shell pkg-config --cflags libevdev)
 EVDEV_LDFLAGS   := $(shell pkg-config --libs libevdev)
 endif
 
-ifneq ($(shell grep -m1 '^\#define LV_USE_FREETYPE ' lv_conf.h | awk '{print $$3}'),0)
+ifneq ($(shell grep -m1 '^\#define LV_USE_FREETYPE ' lvgl/lv_conf.h | awk '{print $$3}'),0)
 FREETYPE_CFLAGS       := $(shell pkg-config --cflags freetype2)
 FREETYPE_LDFLAGS      := $(shell pkg-config --libs freetype2)
 endif
@@ -91,17 +91,17 @@ TARGET          = $(addprefix $(BUILD_OBJ_DIR)/, $(patsubst ./%, %, $(OBJS)))
 
 all: default
 
-$(BUILD_OBJ_DIR)/%.o: %.c lv_conf.h
+$(BUILD_OBJ_DIR)/%.o: %.c lvgl/lv_conf.h
 	@mkdir -p $(dir $@)
 	@$(CC)  $(CFLAGS) -c $< -o $@
 	@echo "CC  $<"
 
-$(BUILD_OBJ_DIR)/%.o: %.cpp lv_conf.h
+$(BUILD_OBJ_DIR)/%.o: %.cpp lvgl/lv_conf.h
 	@mkdir -p $(dir $@)
 	@$(CXX)  $(CFLAGS) -c $< -o $@
 	@echo "CXX $<"
 
-$(BUILD_OBJ_DIR)/%.o: %.S lv_conf.h
+$(BUILD_OBJ_DIR)/%.o: %.S lvgl/lv_conf.h
 	@mkdir -p $(dir $@)
 	@$(CC)  $(CFLAGS) -c $< -o $@
 	@echo "AS  $<"
