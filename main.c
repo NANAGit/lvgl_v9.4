@@ -25,14 +25,11 @@ int main(void)
 #if LV_USE_LINUX_FBDEV
     lv_display_t *disp = lv_linux_fbdev_create();
     lv_linux_fbdev_set_file(disp, "/dev/fb0");
-#endif
-
-#if LV_USE_EVDEV
-    lv_evdev_create(LV_INDEV_TYPE_POINTER, "/dev/input/event1");
-#endif
 
 #if LV_USE_TSLIB
     lv_tslib_create("/dev/input/event1");
+#endif
+
 #endif
 
     /* Create a Demo */

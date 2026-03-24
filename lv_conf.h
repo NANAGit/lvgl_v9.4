@@ -1317,10 +1317,10 @@
 #endif /*LV_USE_LOVYAN_GFX*/
 
 /** Driver for evdev input devices */
-#define LV_USE_EVDEV    1
+#define LV_USE_EVDEV    0
 
 /** Driver for tslib input devices */
-#define LV_USE_TSLIB    1
+#define LV_USE_TSLIB    0
 
 /** Driver for libinput input devices */
 #define LV_USE_LIBINPUT    0
