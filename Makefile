@@ -2,29 +2,51 @@
 # Makefile
 #
 
-CC              ?= gcc
-CXX             ?= g++
+arch := arm
+
+ifeq ($(arch), arm)
+CC              := arm-linux-gnueabihf-gcc
+CXX             := arm-linux-gnueabihf-g++
+else
+CC              := gcc
+CXX             := g++
+endif
+
+
 LVGL_DIR_NAME   ?= lvgl
 LVGL_DIR        ?= .
 
-WARNINGS        := -Wall -Wshadow -Wundef -Wmissing-prototypes -Wno-discarded-qualifiers -Wextra -Wno-unused-function -Wno-error=strict-prototypes -Wpointer-arith \
-                   -fno-strict-aliasing -Wno-error=cpp -Wuninitialized -Wmaybe-uninitialized -Wno-unused-parameter -Wno-missing-field-initializers -Wtype-limits \
-                   -Wsizeof-pointer-memaccess -Wno-format-nonliteral -Wno-cast-qual -Wunreachable-code -Wno-switch-default -Wreturn-type -Wmultichar -Wformat-security \
-                   -Wno-ignored-qualifiers -Wno-error=pedantic -Wno-sign-compare -Wno-error=missing-prototypes -Wdouble-promotion -Wclobbered -Wdeprecated -Wempty-body \
-                   -Wshift-negative-value -Wstack-usage=2048 -Wno-unused-value -std=gnu99
-CFLAGS          ?= -O3 -g0 -I$(LVGL_DIR)/ $(WARNINGS)
+CFLAGS          ?= -O3 -g -I$(LVGL_DIR)/
 LDFLAGS         ?= -lm -lpthread
 
+
+ifeq ($(arch), arm)
+
+ifneq ($(shell grep -m1 '^\#define LV_USE_TSLIB ' lv_conf.h | awk '{print $$3}'),0)
+TSLIB_CFLAGS    := $(shell pkg-config --cflags ./libs/tslib/lib/pkgconfig/tslib.pc)
+TSLIB_LIBS      := $(shell pkg-config --libs ./libs/tslib/lib/pkgconfig/tslib.pc)
+endif
+
+CFLAGS += $(TSLIB_CFLAGS)
+LDFLAGS += $(TSLIB_LIBS)
+
+else
 # Auto-detect enabled backends from lv_conf.h and add flags
 ifneq ($(shell grep -m1 '^\#define LV_USE_SDL ' lv_conf.h | awk '{print $$3}'),0)
-CFLAGS          += $(shell pkg-config --cflags sdl2)
-LDFLAGS         += $(shell pkg-config --libs sdl2)
+SDL_CFLAGS      := $(shell pkg-config --cflags sdl2)
+SDL_LDFLAGS     := $(shell pkg-config --libs sdl2)
 endif
 
 ifneq ($(shell grep -m1 '^\#define LV_USE_EVDEV ' lv_conf.h | awk '{print $$3}'),0)
-CFLAGS          += $(shell pkg-config --cflags libevdev)
-LDFLAGS         += $(shell pkg-config --libs libevdev)
+EVDEV_CFLAGS    := $(shell pkg-config --cflags libevdev)
+EVDEV_LDFLAGS   := $(shell pkg-config --libs libevdev)
 endif
+
+CFLAGS += $(SDL_CFLAGS) $(EVDEV_CFLAGS)
+LDFLAGS += $(SDL_LDFLAGS) $(EVDEV_LDFLAGS)
+
+endif
+
 
 BIN             = main
 BUILD_DIR       = ./build
