@@ -4251,6 +4251,15 @@
     #endif
 #endif
 
+/** Driver for tslib input devices */
+#ifndef LV_USE_TSLIB
+    #ifdef CONFIG_LV_USE_TSLIB
+        #define LV_USE_TSLIB CONFIG_LV_USE_TSLIB
+    #else
+        #define LV_USE_TSLIB    0
+    #endif
+#endif
+
 /** Driver for libinput input devices */
 #ifndef LV_USE_LIBINPUT
     #ifdef CONFIG_LV_USE_LIBINPUT

@@ -48,6 +48,7 @@ extern "C" {
 
 #include "evdev/lv_evdev.h"
 #include "libinput/lv_libinput.h"
+#include "tslib/lv_tslib.h"
 
 #include "windows/lv_windows_input.h"
 #include "windows/lv_windows_display.h"

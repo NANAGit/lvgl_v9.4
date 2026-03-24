@@ -31,6 +31,10 @@ int main(void)
     lv_evdev_create(LV_INDEV_TYPE_POINTER, "/dev/input/event1");
 #endif
 
+#if LV_USE_TSLIB
+    lv_tslib_create("/dev/input/event1");
+#endif
+
     /* Create a Demo */
     // lv_demo_widgets();
     // lv_demo_widgets_start_slideshow();

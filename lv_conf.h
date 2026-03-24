@@ -1319,6 +1319,9 @@
 /** Driver for evdev input devices */
 #define LV_USE_EVDEV    1
 
+/** Driver for tslib input devices */
+#define LV_USE_TSLIB    1
+
 /** Driver for libinput input devices */
 #define LV_USE_LIBINPUT    0
 
