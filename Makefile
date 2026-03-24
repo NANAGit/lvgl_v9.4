@@ -2,7 +2,7 @@
 # Makefile
 #
 
-arch := arm
+arch := x86
 
 ifeq ($(arch), arm)
 CC              := arm-linux-gnueabihf-gcc
