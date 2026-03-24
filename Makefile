@@ -2,7 +2,7 @@
 # Makefile
 #
 
-arch := x86
+arch := arm
 
 ifeq ($(arch), arm)
 CC              := arm-linux-gnueabihf-gcc
@@ -27,8 +27,17 @@ TSLIB_CFLAGS    := $(shell pkg-config --cflags ./libs/tslib/lib/pkgconfig/tslib.
 TSLIB_LIBS      := $(shell pkg-config --libs ./libs/tslib/lib/pkgconfig/tslib.pc)
 endif
 
-CFLAGS += $(TSLIB_CFLAGS)
-LDFLAGS += $(TSLIB_LIBS)
+ifneq ($(shell grep -m1 '^\#define LV_USE_FREETYPE ' lv_conf.h | awk '{print $$3}'),0)
+FREETYPE_CFLAGS := $(shell pkg-config --cflags ./libs/freetype/lib/pkgconfig/freetype2.pc)
+FREETYPE_CFLAGS += -I./libs/freetype/include/
+FREETYPE_LIBS   := $(shell pkg-config --libs ./libs/freetype/lib/pkgconfig/freetype2.pc)
+
+ZLIB_CFLAGS		:= $(shell pkg-config --cflags ./libs/zlib/lib/pkgconfig/zlib.pc)
+ZLIB_LIBS   	:= $(shell pkg-config --cflags --libs ./libs/zlib/lib/pkgconfig/zlib.pc)
+endif
+
+CFLAGS += $(TSLIB_CFLAGS) $(FREETYPE_CFLAGS) $(ZLIB_CFLAGS)
+LDFLAGS += $(TSLIB_LIBS) $(FREETYPE_LIBS) $(ZLIB_LIBS)
 
 else
 # Auto-detect enabled backends from lv_conf.h and add flags
@@ -42,8 +51,13 @@ EVDEV_CFLAGS    := $(shell pkg-config --cflags libevdev)
 EVDEV_LDFLAGS   := $(shell pkg-config --libs libevdev)
 endif
 
-CFLAGS += $(SDL_CFLAGS) $(EVDEV_CFLAGS)
-LDFLAGS += $(SDL_LDFLAGS) $(EVDEV_LDFLAGS)
+ifneq ($(shell grep -m1 '^\#define LV_USE_FREETYPE ' lv_conf.h | awk '{print $$3}'),0)
+FREETYPE_CFLAGS       := $(shell pkg-config --cflags freetype2)
+FREETYPE_LDFLAGS      := $(shell pkg-config --libs freetype2)
+endif
+
+CFLAGS += $(SDL_CFLAGS) $(EVDEV_CFLAGS) $(FREETYPE_CFLAGS)
+LDFLAGS += $(SDL_LDFLAGS) $(EVDEV_LDFLAGS) $(FREETYPE_LDFLAGS)
 
 endif
 
