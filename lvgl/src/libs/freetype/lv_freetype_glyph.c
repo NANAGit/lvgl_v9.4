@@ -12,6 +12,8 @@
 
 #if LV_USE_FREETYPE
 
+#include FT_SYNTHESIS_H
+
 /*********************
  *      DEFINES
  *********************/
@@ -181,6 +183,14 @@ static bool freetype_glyph_create_cb(lv_freetype_glyph_cache_data_t * data, void
     }
 
     FT_GlyphSlot glyph = face->glyph;
+
+    /*For bold bitmap mode, embolden the glyph slot and render to get correct bitmap metrics
+     *so that box_w/adv_w match the actual enlarged bitmap returned by the image cache.*/
+    if(dsc->render_mode == LV_FREETYPE_FONT_RENDER_MODE_BITMAP &&
+       (dsc->style & LV_FREETYPE_FONT_STYLE_BOLD)) {
+        FT_GlyphSlot_Embolden(glyph);
+        FT_Render_Glyph(glyph, FT_RENDER_MODE_NORMAL);
+    }
 
     if(dsc->render_mode == LV_FREETYPE_FONT_RENDER_MODE_OUTLINE) {
 
