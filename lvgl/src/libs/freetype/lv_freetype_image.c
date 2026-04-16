@@ -9,6 +9,7 @@
 
 #include "../../lvgl.h"
 #include "lv_freetype_private.h"
+#include <freetype/ftsynth.h>
 
 #if LV_USE_FREETYPE
 
